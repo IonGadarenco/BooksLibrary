@@ -10,5 +10,6 @@ namespace BooksLibrary.Application.Abstractions
         Task RemoveAsync(T item);
         Task<List<T>> GetAllAsync(int pageNumber, int pageSize);
         Task<T> UpdateAsync(T item);
+        Task GetAllAsync();
     }
 }

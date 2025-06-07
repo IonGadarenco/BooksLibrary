@@ -1,9 +1,8 @@
-﻿
-using BooksLibrary.Application.Abstractions;
+﻿using BooksLibrary.Application.Abstractions;
 using BooksLibrary.Domain.Models;
 using MediatR;
 
-namespace BooksLibrary.Application.Books
+namespace BooksLibrary.Application.Books.Commands
 {
     public record CreateBook(
         string Title,
@@ -17,7 +16,7 @@ namespace BooksLibrary.Application.Books
     public class CreateBookHandler : IRequestHandler<CreateBook, Book>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public CreateBookHandler(IUnitOfWork unitOfWork) 
+        public CreateBookHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
@@ -25,49 +24,52 @@ namespace BooksLibrary.Application.Books
         {
             try
             {
-                await _unitOfWork.BeginTransactionAsync();
 
-                 request.Authors.ForEach( a => {
-                    var author = _unitOfWork.GetRepository<Author>().GetByIdAsync(a.Id);
-
-                    if (author is null)
+                var authorList = new List<Author>();
+                foreach (var a in request.Authors)
+                {
+                    var author = await _unitOfWork.GetRepository<Author>().GetByIdAsync(a.Id);
+                    if (author == null)
                     {
-                        var newAuthor = new Author
+                        author = new Author
                         {
                             FirstName = a.FirstName,
                             LastName = a.LastName
                         };
-
-                         author = _unitOfWork.GetRepository<Author>().AddAsync(newAuthor);
+                        author = await _unitOfWork.GetRepository<Author>().AddAsync(author);
                     }
-                });
 
-                request.Categories.ForEach(c => {
-                    var category = _unitOfWork.GetRepository<Category>().GetByIdAsync(c.Id);
+                    authorList.Add(author);
+                }
 
-                    if (category is null)
+                var categoryList = new List<Category>();
+                foreach (var c in request.Categories)
+                {
+                    var category = await _unitOfWork.GetRepository<Category>().GetByIdAsync(c.Id);
+                    if (category == null)
                     {
-                        var newCategory = new Category
+                        category = new Category
                         {
                             Name = c.Name
                         };
-
-                        category = _unitOfWork.GetRepository<Category>().AddAsync(newCategory);
+                        category = await _unitOfWork.GetRepository<Category>().AddAsync(category);
                     }
-                });
 
-                var publisher = _unitOfWork.GetRepository<Publisher>().GetByIdAsync(request.publisher.Id);
+                    categoryList.Add(category);
+                }
 
-                if (publisher is null)
+                var publisher = await _unitOfWork.GetRepository<Publisher>().GetByIdAsync(request.publisher.Id);
+                if (publisher == null)
                 {
-                    var newPublisher = new Publisher
+                    publisher = new Publisher
                     {
                         Name = request.publisher.Name,
                         Address = request.publisher.Address
                     };
-
-                    publisher = _unitOfWork.GetRepository<Publisher>().AddAsync(newPublisher);
+                    publisher = await _unitOfWork.GetRepository<Publisher>().AddAsync(publisher);
                 }
+
+                await _unitOfWork.BeginTransactionAsync();
 
                 var book = new Book
                 {
@@ -76,8 +78,8 @@ namespace BooksLibrary.Application.Books
                     ISBN = request.ISBN,
                     TotalCopies = request.TotalCopies,
                     PublisherId = publisher.Id,
-                    Authors = request.Authors,
-                    Categories = request.Categories
+                    Authors = authorList,
+                    Categories = categoryList
                 };
 
                 book = await _unitOfWork.GetRepository<Book>().AddAsync(book);
@@ -93,5 +95,6 @@ namespace BooksLibrary.Application.Books
                 throw;
             }
         }
+
     }
 }

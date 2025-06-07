@@ -7,27 +7,26 @@ using BooksLibrary.Application.Abstractions;
 using BooksLibrary.Domain.Models;
 using MediatR;
 
-namespace BooksLibrary.Application.Books
+namespace BooksLibrary.Application.Books.Commands
 {
-    public record DeleteBook(int bookId) : IRequest;
-    public class DeleteBookHandler : IRequestHandler<DeleteBook>
+    public record UpdateBook(int bookId) : IRequest<Book>;
+    public class UpdateBookHandler : IRequestHandler<UpdateBook, Book>
     {
         private readonly IUnitOfWork _unitOfWork;
-        public DeleteBookHandler(IUnitOfWork unitOfWork)
-        { 
+        public UpdateBookHandler(IUnitOfWork unitOfWork)
+        {
             _unitOfWork = unitOfWork;
         }
-        public async Task Handle(DeleteBook request, CancellationToken cancellationToken)
+        public async Task<Book> Handle(UpdateBook request, CancellationToken cancellationToken)
         {
             var book = await _unitOfWork.GetRepository<Book>().GetByIdAsync(request.bookId);
 
             if (book is null)
             {
-                throw new Exception("Book not found");
+                throw new Exception("Book not existing");
             }
 
-            await _unitOfWork.GetRepository<Book>().RemoveAsync(book);
-            await _unitOfWork.SaveAsync();
+            return await _unitOfWork.GetRepository<Book>().UpdateAsync(book);
         }
     }
 }
