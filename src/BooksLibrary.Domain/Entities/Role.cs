@@ -6,7 +6,6 @@ namespace BooksLibrary.Domain.Models
     {
         public string RoleName { get; set; }
         public ICollection<User> Users { get; set; } = new List<User>();
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+
     }
 }

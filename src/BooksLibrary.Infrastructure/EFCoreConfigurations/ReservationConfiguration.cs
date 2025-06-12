@@ -9,7 +9,7 @@ namespace BooksLibrary.Infrastructure.EFCoreConfigurations
     {
         public void Configure(EntityTypeBuilder<Reservation> builder)
         {
-            builder.Property(r => r.ReservedAt).IsRequired();
+            builder.Property(r => r.CreatedAt).IsRequired();
             builder.Property(r => r.ExpiresAt).IsRequired();
             builder.Property(r => r.IsActive).IsRequired();
 

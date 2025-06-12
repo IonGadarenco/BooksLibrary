@@ -9,8 +9,7 @@ namespace BooksLibrary.Infrastructure.EFCoreConfigurations
     {
         public void Configure(EntityTypeBuilder<Author> builder)
         {
-            builder.Property(a => a.FirstName).IsRequired().HasMaxLength(50);
-            builder.Property(a => a.LastName).IsRequired().HasMaxLength(50);
+            builder.Property(a => a.FullName).IsRequired().HasMaxLength(50);
 
             builder.HasMany(a => a.Books)
                    .WithMany(b => b.Authors);

@@ -4,7 +4,6 @@ namespace BooksLibrary.Domain.Models
 {
     public class Loan : Entity
     {
-        public DateTime BorrowedAt { get; set; }
         public DateTime? ReturnedAt { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }

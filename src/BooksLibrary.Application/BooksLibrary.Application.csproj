@@ -11,17 +11,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Authors\" />
-    <Folder Include="Categories\" />
-    <Folder Include="Loans\" />
-    <Folder Include="Roles\" />
-    <Folder Include="Reservations\" />
-    <Folder Include="Users\" />
-    <Folder Include="Publishers\" />
-    <Folder Include="Reviews\" />
+    <Folder Include="App\Loans\" />
+    <Folder Include="App\Roles\" />
+    <Folder Include="App\Reservations\" />
+    <Folder Include="App\Users\" />
+    <Folder Include="App\Reviews\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="MediatR" Version="12.5.0" />
   </ItemGroup>
 

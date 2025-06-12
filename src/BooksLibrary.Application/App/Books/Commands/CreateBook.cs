@@ -1,0 +1,124 @@
+﻿using AutoMapper;
+using BooksLibrary.Application.App.Authors.DTOs;
+using BooksLibrary.Application.App.Books.DTOs;
+using BooksLibrary.Application.App.Categories.DOTs;
+using BooksLibrary.Application.App.Publishers.DTOs;
+using BooksLibrary.Application.Commun.Abstractions;
+using BooksLibrary.Domain.Models;
+using MediatR;
+
+namespace BooksLibrary.Application.App.Books.Commands
+{
+    public class CreateBook : IRequest<BookDto>
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string ISBN { get; set; }
+        public int TotalCopies { get; set; }
+
+        public PublisherDto Publisher { get; set; }
+        public List<AuthorDto> Authors { get; set; }
+        public List<CategoryDto> Categories { get; set; }
+    }
+    public class CreateBookHandler : IRequestHandler<CreateBook, BookDto>
+    {
+        private readonly IRepository<Book> _bookRepository;
+        private readonly IRepository<Author> _authorRepository;
+        private readonly IRepository<Category> _categoryRepository;
+        private readonly IRepository<Publisher> _publisherRepository;
+        private readonly IMapper _mapper;
+
+        public CreateBookHandler(
+            IRepository<Book> bookRepository,
+            IRepository<Author> authorRepository,
+            IRepository<Category> categoryRepository,
+            IRepository<Publisher> publisherRepository,
+            IMapper mapper)
+        {
+            _bookRepository = bookRepository;
+            _authorRepository = authorRepository;
+            _categoryRepository = categoryRepository;
+            _publisherRepository = publisherRepository;
+            _mapper = mapper;
+        }
+        public async Task<BookDto> Handle(CreateBook request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var authors = new List<Author>();
+                foreach (var a in request.Authors)
+                {
+                    var author = await _authorRepository.GetByNameAsync(a.FullName);
+                    if (author == null)
+                    {
+                        author = new Author
+                        {
+                            FullName = a.FullName,
+                        };
+                        author = await _authorRepository.AddAsync(author);
+                    }
+
+                    authors.Add(author);
+                }
+
+                var categories = new List<Category>();
+                foreach (var c in request.Categories)
+                {
+                    var category = await _categoryRepository.GetByNameAsync(c.FullName);
+                    if (category == null)
+                    {
+                        category = new Category
+                        {
+                            FullName = c.FullName
+                        };
+                        category = await _categoryRepository.AddAsync(category);
+                    }
+
+                    categories.Add(category);
+                }
+
+                var publisher = await _publisherRepository.GetByNameAsync(request.Publisher.FullName);
+                if (publisher == null)
+                {
+                    publisher = new Publisher
+                    {
+                        FullName = request.Publisher.FullName,
+                        Address = request.Publisher.Address
+                    };
+                    publisher = await _publisherRepository.AddAsync(publisher);
+                }
+                var existingBook = await _bookRepository.GetByTitleAndIsbnAsync(request.Title, request.ISBN);
+
+                if (existingBook == null)
+                {
+                    var book = new Book
+                    {
+                        Title = request.Title,
+                        Description = request.Description,
+                        ISBN = request.ISBN,
+                        TotalCopies = request.TotalCopies,
+                        PublisherId = publisher.Id,
+                        Authors = authors,
+                        Categories = categories
+                    };
+
+                    var createBook = await _bookRepository.AddAsync(book);
+
+                    return _mapper.Map<BookDto>(createBook);
+                }
+
+                existingBook.TotalCopies++;
+                await _bookRepository.UpdateAsync(existingBook);
+                return _mapper.Map<BookDto>(existingBook);
+
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+    }
+}

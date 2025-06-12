@@ -9,7 +9,7 @@ namespace BooksLibrary.Infrastructure.EFCoreConfigurations
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
-            builder.Property(c => c.Name).IsRequired().HasMaxLength(50);
+            builder.Property(c => c.FullName).IsRequired().HasMaxLength(50);
 
             builder.HasMany(c => c.Books)
                    .WithMany(b => b.Categories);

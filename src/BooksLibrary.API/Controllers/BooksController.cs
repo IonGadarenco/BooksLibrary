@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MediatR;
+using BooksLibrary.Application.App.Books.Queries;
+using BooksLibrary.Application.App.Books.Commands;
 
 namespace BooksLibrary.API.Controllers
 {
@@ -6,91 +9,65 @@ namespace BooksLibrary.API.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        public List<Book> Books = new List<Book>
-            {
-                new Book
-                {
-                    Id = 1,
-                    Title = "Amintiri din copilarie",
-                    Description = "Povestiri amuzante din copilariea lui Ion Creanga",
-                    Author = "Ion Creanga"
-                },
-                new Book
-                {
-                    Id = 2,
-                    Title = "Biserica Verticala",
-                    Description = "Teologiea eclesiologica",
-                    Author = "Josh McDonald"
-                }
-            };
-
-        [HttpGet]
-        public IActionResult GetAllBooks() 
+        private readonly IMediator _mediator;
+        public BooksController(IMediator mediator)
         {
-            var books = Books;
+            _mediator = mediator;
+        }
 
-            return Ok(books);
+        [HttpGet("page-number{pageNumber}/page-size{pageSize}")]
+        public async Task<IActionResult> GetAllBooksPaginated(int pageNumber, int pageSize) 
+        {
+            var result = await _mediator.Send(new GetPagedBooks { PageNumber = pageNumber, PageSize = pageSize});
+
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetBookById(int id)
+        public async Task<IActionResult> GetBookById(int id)
         {
-            var book = Books.FirstOrDefault(b => b.Id == id);
+            var result = await _mediator.Send(new GetBookById { Id = id});
 
-            if( book is null)
+            if(result == null)
             {
-                return NotFound();
+                return NotFound($"Book with id {id} not found");
             }
 
-            return Ok(book);
+            return Ok(result);
         }
 
         [HttpPost]
-        public IActionResult AddBook(Book book)
+        public async Task<IActionResult> AddBook(CreateBook createBook)
         {
-            if (!ModelState.IsValid)
+            var result = await _mediator.Send(createBook);
+
+            return Ok(result);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditBook(int id, [FromBody] UpdateBook updateBook)
+        {
+            if(id != updateBook.Id)
             {
                 return BadRequest();
             }
 
-            return Ok(book);
-        }
+            var result = await _mediator.Send(updateBook);
 
-        [HttpPut]
-        public IActionResult EditBook(Book book)
-        {
-            if (book == null)
-            {
-                return BadRequest("Book data is required.");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var existingBook = Books.FirstOrDefault(b => b.Id == book.Id);
-            if (existingBook == null)
-            {
-                return NotFound("Book not found.");
-            }
-
-            Books.Remove(existingBook);
-            Books.Add(book);
-
-            return Ok(Books);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id, [FromBody] DeleteBook deleteBook)
         {
-            var book = Books.FirstOrDefault(b => b.Id == id);
-            if (book == null)
+            if (id != deleteBook.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
-            Books.Remove(book);
-            return Ok(Books);
+
+            await _mediator.Send(deleteBook);
+            
+            return Ok();
         }
     }
 }

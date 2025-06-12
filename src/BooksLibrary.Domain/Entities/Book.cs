@@ -14,7 +14,6 @@ namespace BooksLibrary.Domain.Models
         public ICollection<Category> Categories { get; set; } = new List<Category>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public ICollection<Loan> Loans { get; set; } = new List<Loan>();
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+
     }   
 }

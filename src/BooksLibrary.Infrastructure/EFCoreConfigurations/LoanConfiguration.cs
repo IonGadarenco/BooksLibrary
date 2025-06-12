@@ -9,7 +9,7 @@ namespace BooksLibrary.Infrastructure.EFCoreConfigurations
     {
         public void Configure(EntityTypeBuilder<Loan> builder)
         {
-            builder.Property(l => l.BorrowedAt).IsRequired();
+            builder.Property(l => l.CreatedAt).IsRequired();
             builder.Property(l => l.ReturnedAt);
 
             builder.HasOne(l => l.User)

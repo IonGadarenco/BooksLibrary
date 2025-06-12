@@ -1,5 +1,4 @@
-﻿
-using BooksLibrary.Application.Abstractions;
+﻿using BooksLibrary.Application.Commun.Abstractions;
 using BooksLibrary.Domain.Models;
 using BooksLibrary.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +20,7 @@ namespace BooksLibrary.Infrastructure
             return item;
         }
 
-        public async Task<List<T>> GetAllAsync(int pageNumber, int pageSize)
+        public async Task<List<T>> GetAllAsyncPaged(int pageNumber, int pageSize)
         {
             return await _context.Set<T>()
                 .Skip((pageNumber - 1) * pageSize)
@@ -29,10 +28,56 @@ namespace BooksLibrary.Infrastructure
                 .ToListAsync();
         }
 
+        public async Task<IQueryable<T>> GetAllAsync()
+        {
+            return _context.Set<T>();
+        }
+
         public async Task<T?> GetByIdAsync(int id)
         {
-            return await _context.Set<T>()
-                .FirstOrDefaultAsync(i => i.Id == id);
+            if (typeof(T) == typeof(Book))
+            {
+                var book = await _context.Set<Book>()
+                    .Include(b => b.Authors)
+                    .Include(b => b.Categories)
+                    .Include(b => b.Publisher)
+                    .FirstOrDefaultAsync(b => b.Id == id);
+
+                return book as T;
+            }
+
+            return await _context.Set<T>().FirstOrDefaultAsync(i => EF.Property<int>(i, "Id") == id);
+
+        }
+
+        public async Task<T?> GetByNameAsync(string name)
+        {
+            if(typeof(T) == typeof(Author))
+            {
+                var author = await _context.Set<Author>().FirstOrDefaultAsync(a => a.FullName == name);
+                return author as T;
+            }
+
+            if (typeof(T) == typeof(Category))
+            {
+                var category = await _context.Set<Category>().FirstOrDefaultAsync(c => c.FullName == name);
+                return category as T;
+            }
+
+            if (typeof(T) == typeof(Publisher))
+            {
+                var publisher = await _context.Set<Publisher>().FirstOrDefaultAsync(p => p.FullName == name);
+                return publisher as T;
+            }
+            return null;
+        }
+
+        public async Task<Book?> GetByTitleAndIsbnAsync(string title, string isbn)
+        {
+            return await _context.Books
+                .FirstOrDefaultAsync(b =>
+                    b.Title.ToLower().Trim() == title.ToLower().Trim() &&
+                    b.ISBN.ToLower().Trim() == isbn.ToLower().Trim());
         }
 
         public async Task RemoveAsync(T item)
