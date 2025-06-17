@@ -12,9 +12,11 @@ namespace BooksLibrary.Application.Mappings
         public MappingProfile()
         {
             CreateMap<Book, BookDto>().ReverseMap();
+            CreateMap<Book, UpdateBookCommandDto>().ReverseMap();
             CreateMap<Author, AuthorDto>().ReverseMap();
             CreateMap<Category, CategoryDto>().ReverseMap();
             CreateMap<Publisher, PublisherDto>().ReverseMap();
+            CreateMap<Book, BookListDto>();
         }
     }
 }

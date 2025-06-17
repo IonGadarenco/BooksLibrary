@@ -1,15 +1,17 @@
 ﻿using AutoMapper;
 using BooksLibrary.Application.App.Authors.DTOs;
 using BooksLibrary.Application.App.Books.DTOs;
+using BooksLibrary.Application.App.Books.Exceptions;
 using BooksLibrary.Application.App.Categories.DOTs;
 using BooksLibrary.Application.App.Publishers.DTOs;
 using BooksLibrary.Application.Commun.Abstractions;
 using BooksLibrary.Domain.Models;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace BooksLibrary.Application.App.Books.Commands
 {
-    public class CreateBook : IRequest<BookDto>
+    public class CreateBookCommand : IRequest<BookDto>
     {
         public string Title { get; set; }
         public string Description { get; set; }
@@ -20,28 +22,31 @@ namespace BooksLibrary.Application.App.Books.Commands
         public List<AuthorDto> Authors { get; set; }
         public List<CategoryDto> Categories { get; set; }
     }
-    public class CreateBookHandler : IRequestHandler<CreateBook, BookDto>
+    public class CreateBookHandler : IRequestHandler<CreateBookCommand, BookDto>
     {
         private readonly IRepository<Book> _bookRepository;
         private readonly IRepository<Author> _authorRepository;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<Publisher> _publisherRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<CreateBookHandler> _logger;
 
         public CreateBookHandler(
             IRepository<Book> bookRepository,
             IRepository<Author> authorRepository,
             IRepository<Category> categoryRepository,
             IRepository<Publisher> publisherRepository,
-            IMapper mapper)
+            IMapper mapper,
+            ILogger<CreateBookHandler> logger)
         {
             _bookRepository = bookRepository;
             _authorRepository = authorRepository;
             _categoryRepository = categoryRepository;
             _publisherRepository = publisherRepository;
             _mapper = mapper;
+            _logger = logger;
         }
-        public async Task<BookDto> Handle(CreateBook request, CancellationToken cancellationToken)
+        public async Task<BookDto> Handle(CreateBookCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -91,6 +96,13 @@ namespace BooksLibrary.Application.App.Books.Commands
 
                 if (existingBook == null)
                 {
+                    var checkIsbn = await _bookRepository.CheckIsbn(request.ISBN);
+
+                    if(!checkIsbn)
+                    {
+                        throw new BookIsbnAlreadyExistException(request.ISBN);
+                    }
+
                     var book = new Book
                     {
                         Title = request.Title,
@@ -103,19 +115,20 @@ namespace BooksLibrary.Application.App.Books.Commands
                     };
 
                     var createBook = await _bookRepository.AddAsync(book);
+                    _logger.LogInformation("A new book '{Title}' was created successfully.", request.Title);
 
                     return _mapper.Map<BookDto>(createBook);
                 }
 
                 existingBook.TotalCopies++;
                 await _bookRepository.UpdateAsync(existingBook);
+                _logger.LogInformation("The book '{Title}' already exists. Incremented total copies.", request.Title);
+
                 return _mapper.Map<BookDto>(existingBook);
-
-
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e, "An error occurred while creating the book '{Title}'.", request.Title);
                 throw;
             }
         }

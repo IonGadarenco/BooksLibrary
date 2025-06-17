@@ -33,7 +33,7 @@ namespace BooksLibrary.Infrastructure
             return _context.Set<T>();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
             if (typeof(T) == typeof(Book))
             {
@@ -46,27 +46,26 @@ namespace BooksLibrary.Infrastructure
                 return book as T;
             }
 
-            return await _context.Set<T>().FirstOrDefaultAsync(i => EF.Property<int>(i, "Id") == id);
-
+            return await _context.Set<T>().FirstOrDefaultAsync(i => i.Id == id);
         }
 
-        public async Task<T?> GetByNameAsync(string name)
+        public async Task<T> GetByNameAsync(string name)
         {
             if(typeof(T) == typeof(Author))
             {
-                var author = await _context.Set<Author>().FirstOrDefaultAsync(a => a.FullName == name);
+                var author = await _context.Set<Author>().FirstOrDefaultAsync(a => a.FullName.ToLower().Trim() == name.ToLower().Trim());
                 return author as T;
             }
 
             if (typeof(T) == typeof(Category))
             {
-                var category = await _context.Set<Category>().FirstOrDefaultAsync(c => c.FullName == name);
+                var category = await _context.Set<Category>().FirstOrDefaultAsync(c => c.FullName.ToLower().Trim() == name.ToLower().Trim());
                 return category as T;
             }
 
             if (typeof(T) == typeof(Publisher))
             {
-                var publisher = await _context.Set<Publisher>().FirstOrDefaultAsync(p => p.FullName == name);
+                var publisher = await _context.Set<Publisher>().FirstOrDefaultAsync(p => p.FullName.ToLower().Trim() == name.ToLower().Trim());
                 return publisher as T;
             }
             return null;
@@ -97,6 +96,13 @@ namespace BooksLibrary.Infrastructure
             _context.Set<T>().Update(item);
             await _context.SaveChangesAsync();
             return item;
+        }
+
+        public async Task<bool> CheckIsbn(string isbn)
+        {
+            var result = await _context.Set<Book>().FirstOrDefaultAsync(b => b.ISBN == isbn);
+
+            return result == null ? true : false;
         }
     }
 }

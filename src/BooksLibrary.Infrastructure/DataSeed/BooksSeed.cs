@@ -11,9 +11,9 @@ namespace BooksLibrary.Infrastructure.DataSeed
     {
         public static async Task SeedAsync(IMediator mediator)
         {
-            var books = new List<CreateBook>
+            var books = new List<CreateBookCommand>
             {
-                new CreateBook
+                new CreateBookCommand
                 {
                     Title = "Clean Code",
                     Description = "A Handbook of Agile Software Craftsmanship",
@@ -30,7 +30,7 @@ namespace BooksLibrary.Infrastructure.DataSeed
                         new CategoryDto { FullName = "Best Practices" }
                     }
                 },
-                new CreateBook
+                new CreateBookCommand
                 {
                     Title = "The Pragmatic Programmer",
                     Description = "Your Journey to Mastery",
@@ -47,7 +47,7 @@ namespace BooksLibrary.Infrastructure.DataSeed
                         new CategoryDto { FullName = "Software Development" }
                     }
                 },
-                new CreateBook
+                new CreateBookCommand
                 {
                     Title = "Domain-Driven Design",
                     Description = "Tackling Complexity in the Heart of Software",
@@ -64,7 +64,7 @@ namespace BooksLibrary.Infrastructure.DataSeed
                         new CategoryDto { FullName = "DDD" }
                     }
                 },
-                new CreateBook
+                new CreateBookCommand
                 {
                     Title = "Refactoring",
                     Description = "Improving the Design of Existing Code",
@@ -80,7 +80,7 @@ namespace BooksLibrary.Infrastructure.DataSeed
                         new CategoryDto { FullName = "Refactoring" }
                     }
                 },
-                new CreateBook
+                new CreateBookCommand
                 {
                     Title = "C# in Depth",
                     Description = "Deep dive into C# by Jon Skeet",

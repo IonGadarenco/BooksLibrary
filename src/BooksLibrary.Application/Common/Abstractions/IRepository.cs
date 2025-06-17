@@ -12,5 +12,6 @@ namespace BooksLibrary.Application.Commun.Abstractions
         Task<List<T>> GetAllAsyncPaged(int pageNumber, int pageSize);
         Task<IQueryable<T>> GetAllAsync();
         Task<T> UpdateAsync(T item);
+        Task<bool> CheckIsbn(string isbn);
     }
 }

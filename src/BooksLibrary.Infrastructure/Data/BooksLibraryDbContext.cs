@@ -21,12 +21,12 @@ namespace BooksLibrary.Infrastructure.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<User> Users { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder
-                .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=MyBooksLibrary;Trusted_Connection=True;")
-                .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information);
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder
+        //        .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=MyBooksLibrary;Trusted_Connection=True;")
+        //        .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information);
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

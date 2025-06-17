@@ -2,6 +2,8 @@
 using MediatR;
 using BooksLibrary.Application.App.Books.Queries;
 using BooksLibrary.Application.App.Books.Commands;
+using BooksLibrary.Application.Common.Models;
+using BooksLibrary.Application.App.Books.DTOs;
 
 namespace BooksLibrary.API.Controllers
 {
@@ -15,57 +17,55 @@ namespace BooksLibrary.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("page-number{pageNumber}/page-size{pageSize}")]
-        public async Task<IActionResult> GetAllBooksPaginated(int pageNumber, int pageSize) 
+        [HttpGet("paged")]
+        public async Task<IActionResult> GetAllBooksPaginated([FromQuery] PagedRequest pagedRequest) 
         {
-            var result = await _mediator.Send(new GetPagedBooks { PageNumber = pageNumber, PageSize = pageSize});
+            var result = await _mediator.Send(new GetPagedBooksQuery { PagedRequest = pagedRequest});
 
             return Ok(result);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetBookById(int id)
+        [HttpGet("{bookId}")]
+        public async Task<IActionResult> GetBookById( [FromRoute] int bookId)
         {
-            var result = await _mediator.Send(new GetBookById { Id = id});
+            var result = await _mediator.Send(new GetBookByIdQuery { Id = bookId});
 
             if(result == null)
             {
-                return NotFound($"Book with id {id} not found");
+                return NotFound($"Book with id {bookId} not found");
             }
 
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddBook(CreateBook createBook)
+        public async Task<IActionResult> AddBook( [FromBody] CreateBookCommand createBookCommand)
         {
-            var result = await _mediator.Send(createBook);
+            var result = await _mediator.Send(createBookCommand);
 
             return Ok(result);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> EditBook(int id, [FromBody] UpdateBook updateBook)
+        [HttpPut("{bookId}")]
+        public async Task<IActionResult> EditBook([FromRoute] int bookId, [FromBody] UpdateBookCommandDto updateBookCommandDto)
         {
-            if(id != updateBook.Id)
+            var updateBookCommand = new UpdateBookCommand
             {
-                return BadRequest();
-            }
-
-            var result = await _mediator.Send(updateBook);
+                Id = bookId,
+                Title = updateBookCommandDto.Title,
+                Description = updateBookCommandDto.Description,
+                PublisherId = updateBookCommandDto.PublisherId,
+                
+            };
+            var result = await _mediator.Send(updateBookCommand);
 
             return Ok(result);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(int id, [FromBody] DeleteBook deleteBook)
+        [HttpDelete("{bookId}")]
+        public async Task<IActionResult> DeleteBook( [FromRoute] int bookId)
         {
-            if (id != deleteBook.Id)
-            {
-                return BadRequest();
-            }
-
-            await _mediator.Send(deleteBook);
+            await _mediator.Send(new DeleteBookCommand { Id = bookId});
             
             return Ok();
         }
