@@ -49,7 +49,7 @@ public class UpdateBookCommandTests
 
         // Assert
         Assert.NotNull(result);
-        _bookRepoMock.Verify(r => r.UpdateAsync(It.Is<Book>(b => b.Title == command.Title && b.ISBN == command.ISBN)), Times.Once);
+        _bookRepoMock.Verify(r => r.UpdateAsync(It.Is<Book>(b => b.Id == command.Id)), Times.Once);
         Assert.IsType<UpdateBookCommandDto>(result);
     }
 

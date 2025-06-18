@@ -14,8 +14,6 @@ namespace BooksLibrary.Application.App.Books.Commands
         public int Id { get; set; }
         public string Title { get; set; } = default!;
         public string Description { get; set; } = default!;
-        public string ISBN { get; set; } = default!;
-        public int TotalCopies { get; set; }
         public int PublisherId { get; set; }
     }
     public class UpdateBookHandler : IRequestHandler<UpdateBookCommand, UpdateBookCommandDto>

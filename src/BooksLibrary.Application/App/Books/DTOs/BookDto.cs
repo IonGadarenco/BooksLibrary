@@ -1,6 +1,5 @@
 ﻿using BooksLibrary.Application.App.Authors.DTOs;
 using BooksLibrary.Application.App.Categories.DOTs;
-using BooksLibrary.Domain.Models;
 
 namespace BooksLibrary.Application.App.Books.DTOs
 {

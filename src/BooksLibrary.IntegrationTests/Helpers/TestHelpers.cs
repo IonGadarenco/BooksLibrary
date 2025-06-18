@@ -39,7 +39,10 @@ namespace BooksLibrary.IntegrationTests.Helpers
             services.AddAutoMapper(typeof(MappingProfile));
 
             // MediatR (scanează toate handler-ele)
-            services.AddMediatR(typeof(CreateBookCommand).Assembly);
+            services.AddMediatR(cfg =>
+            {
+                cfg.RegisterServicesFromAssembly(typeof(CreateBookCommand).Assembly);
+            });
 
             // Logger generic
             services.AddLogging();
