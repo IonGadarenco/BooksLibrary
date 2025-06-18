@@ -21,7 +21,7 @@ namespace BooksLibrary.API.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occurred.");
+                _logger.LogError("An error occurred: {Message}", ex.Message);
 
                 httpContext.Response.ContentType = "application/json";
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;

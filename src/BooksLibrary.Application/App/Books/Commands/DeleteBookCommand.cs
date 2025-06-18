@@ -21,24 +21,16 @@ namespace BooksLibrary.Application.App.Books.Commands
         }
         public async Task<Unit> Handle(DeleteBookCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var book = await _bookRepository.GetByIdAsync(request.Id);
+            var book = await _bookRepository.GetByIdAsync(request.Id);
 
-                if (book == null)
-                {
-                    throw new EntityNotExistException("Book", request.Id);
-                }
-
-                await _bookRepository.RemoveAsync(book);
-                _logger.LogInformation("Book with ID {Id} was deleted successfully", request.Id);
-                return Unit.Value;
-            }
-            catch (Exception ex)
+            if (book == null)
             {
-                _logger.LogError(ex, "Error occurred while deleting book with ID {Id}", request.Id);
-                throw;
+                throw new EntityNotExistException("Book", request.Id);
             }
+
+            await _bookRepository.RemoveAsync(book);
+            _logger.LogInformation("Book with ID {Id} was deleted successfully", request.Id);
+            return Unit.Value;
         }
     }
 }

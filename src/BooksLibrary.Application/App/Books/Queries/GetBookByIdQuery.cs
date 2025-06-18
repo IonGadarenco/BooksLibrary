@@ -25,24 +25,17 @@ namespace BooksLibrary.Application.App.Books.Queries
         }
         public async Task<BookDto> Handle(GetBookByIdQuery request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var book = await _bookRepository.GetByIdAsync(request.Id);
+            
+            var book = await _bookRepository.GetByIdAsync(request.Id);
 
-                if (book == null)
-                {
-                    _logger.LogError("Book with ID = {Id} does not exist", request.Id);
-                    throw new EntityNotExistException("Book", request.Id);
-                }
-
-                _logger.LogInformation("Book with ID = {Id} exists", book.Id);
-                return _mapper.Map<BookDto>(book);
-            }
-            catch (Exception ex)
+            if (book == null)
             {
-                _logger.LogError(ex, "An error occurred while retrieving the book with ID {Id}", request.Id);
-                throw;
+                throw new EntityNotExistException("Book", request.Id);
             }
+
+            _logger.LogInformation("Book with ID = {Id} exists", book.Id);
+            return _mapper.Map<BookDto>(book);
+            
         }
     }
 }

@@ -5,6 +5,8 @@ using MediatR;
 using BooksLibrary.Infrastructure.Data;
 using BooksLibrary.API.Middleware;
 using Serilog;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace BooksLibrary.API
 {
@@ -28,6 +30,8 @@ namespace BooksLibrary.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.ConfigureOptions<UserOptionsSetup>();
+
             var app = builder.Build();
 
             var scope = app.Services.CreateScope();
@@ -38,7 +42,7 @@ namespace BooksLibrary.API
             using (scope)
             {
                 var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
-                await BooksSeed.SeedAsync(mediator);
+                //await BooksSeed.SeedAsync(mediator);
             }
 
             if (app.Environment.IsDevelopment())
@@ -47,6 +51,20 @@ namespace BooksLibrary.API
                 app.UseSwaggerUI();
                 app.UseDeveloperExceptionPage();
             }
+
+            app.MapGet("options", (
+                IOptions<UserOption> option,
+                IOptionsSnapshot<UserOption> optionSnapshot,
+                IOptionsMonitor<UserOption> optionMonitor) =>
+            {
+                var user = new
+                {
+                    OptionValue = option.Value,
+                    OptionSnapshotValue = optionSnapshot.Value,
+                    OptionMonitorValue = optionMonitor.CurrentValue
+                };
+                return Results.Ok(user);
+            });
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseHttpsRedirection();

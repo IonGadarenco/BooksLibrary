@@ -57,13 +57,6 @@ public class GetBookByIdQueryHandlerTests
 
         // Act & Assert
         await Assert.ThrowsAsync<EntityNotExistException>(() => handler.Handle(query, CancellationToken.None));
-        _loggerMock.Verify(
-            x => x.Log(
-                LogLevel.Error,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("error occurred")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
-            Times.Once);
+        
     }
 }
