@@ -68,6 +68,13 @@ namespace BooksLibrary.Infrastructure
                 var publisher = await _context.Set<Publisher>().FirstOrDefaultAsync(p => p.FullName.ToLower().Trim() == name.ToLower().Trim());
                 return publisher as T;
             }
+
+            if (typeof(T) == typeof(Role))
+            {
+                var role = await _context.Set<Role>().FirstOrDefaultAsync(p => p.RoleName.ToLower().Trim() == name.ToLower().Trim());
+                return role as T;
+            }
+
             return null;
         }
 

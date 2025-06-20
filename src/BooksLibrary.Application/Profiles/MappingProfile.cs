@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BooksLibrary.Application.App.Auth.AuthResponse.DTOs;
 using BooksLibrary.Application.App.Authors.DTOs;
 using BooksLibrary.Application.App.Books.DTOs;
 using BooksLibrary.Application.App.Categories.DOTs;

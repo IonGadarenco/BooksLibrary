@@ -4,6 +4,7 @@ using BooksLibrary.Application.App.Books.Queries;
 using BooksLibrary.Application.App.Books.Commands;
 using BooksLibrary.Application.Common.Models;
 using BooksLibrary.Application.App.Books.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BooksLibrary.API.Controllers
 {
@@ -17,6 +18,7 @@ namespace BooksLibrary.API.Controllers
             _mediator = mediator;
         }
 
+        [Authorize(Roles = "admin, user, vip")]
         [HttpGet("paged")]
         public async Task<IActionResult> GetAllBooksPaginated([FromQuery] PagedRequest pagedRequest) 
         {
@@ -25,6 +27,7 @@ namespace BooksLibrary.API.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin, user, vip")]
         [HttpGet("{bookId}")]
         public async Task<IActionResult> GetBookById( [FromRoute] int bookId)
         {
@@ -38,6 +41,7 @@ namespace BooksLibrary.API.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         public async Task<IActionResult> AddBook( [FromBody] CreateBookCommand createBookCommand)
         {
@@ -46,6 +50,7 @@ namespace BooksLibrary.API.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPut("{bookId}")]
         public async Task<IActionResult> EditBook([FromRoute] int bookId, [FromBody] UpdateBookCommandDto updateBookCommandDto)
         {
@@ -62,6 +67,7 @@ namespace BooksLibrary.API.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpDelete("{bookId}")]
         public async Task<IActionResult> DeleteBook( [FromRoute] int bookId)
         {

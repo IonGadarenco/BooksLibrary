@@ -5,8 +5,10 @@ using MediatR;
 using BooksLibrary.Infrastructure.Data;
 using BooksLibrary.API.Middleware;
 using Serilog;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http.HttpResults;
+using BooksLibrary.API.Extensions;
+using BooksLibrary.Infrastructure.Services;
+using BooksLibrary.Application.App.Auth.Abstractions;
 
 namespace BooksLibrary.API
 {
@@ -30,7 +32,9 @@ namespace BooksLibrary.API
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.ConfigureOptions<UserOptionsSetup>();
+            builder.RegisterAuthentication();
+            builder.RegisterSwagger();
+            builder.Services.AddSingleton<IJwtService, IdentityServices>();
 
             var app = builder.Build();
 
@@ -52,22 +56,9 @@ namespace BooksLibrary.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.MapGet("options", (
-                IOptions<UserOption> option,
-                IOptionsSnapshot<UserOption> optionSnapshot,
-                IOptionsMonitor<UserOption> optionMonitor) =>
-            {
-                var user = new
-                {
-                    OptionValue = option.Value,
-                    OptionSnapshotValue = optionSnapshot.Value,
-                    OptionMonitorValue = optionMonitor.CurrentValue
-                };
-                return Results.Ok(user);
-            });
-
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
             await app.RunAsync();

@@ -49,12 +49,12 @@ namespace BooksLibrary.Infrastructure.Data
             {
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.CreatedAt = DateTime.UtcNow.ToLocalTime();
                 }
 
                 if (entry.State == EntityState.Modified)
                 {
-                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                    entry.Entity.UpdatedAt = DateTime.UtcNow.ToLocalTime();
                 }
             }
 
