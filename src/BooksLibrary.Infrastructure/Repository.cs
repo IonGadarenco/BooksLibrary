@@ -16,16 +16,7 @@ namespace BooksLibrary.Infrastructure
         public async Task<T> AddAsync(T item)
         {
             _context.Set<T>().Add(item);
-            await _context.SaveChangesAsync();
             return item;
-        }
-
-        public async Task<List<T>> GetAllAsyncPaged(int pageNumber, int pageSize)
-        {
-            return await _context.Set<T>()
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
         }
 
         public async Task<IQueryable<T>> GetAllAsync()
@@ -68,13 +59,7 @@ namespace BooksLibrary.Infrastructure
                 var publisher = await _context.Set<Publisher>().FirstOrDefaultAsync(p => p.FullName.ToLower().Trim() == name.ToLower().Trim());
                 return publisher as T;
             }
-
-            if (typeof(T) == typeof(Role))
-            {
-                var role = await _context.Set<Role>().FirstOrDefaultAsync(p => p.RoleName.ToLower().Trim() == name.ToLower().Trim());
-                return role as T;
-            }
-
+            
             return null;
         }
 
@@ -94,14 +79,12 @@ namespace BooksLibrary.Infrastructure
             if (toDelete != null)
             {
                 _context.Set<T>().Remove(toDelete);
-                await _context.SaveChangesAsync();
             }
         }
 
         public async Task<T> UpdateAsync(T item)
         {
             _context.Set<T>().Update(item);
-            await _context.SaveChangesAsync();
             return item;
         }
 
@@ -111,5 +94,11 @@ namespace BooksLibrary.Infrastructure
 
             return result == null ? true : false;
         }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

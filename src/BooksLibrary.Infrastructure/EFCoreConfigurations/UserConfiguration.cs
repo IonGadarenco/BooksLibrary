@@ -28,9 +28,6 @@ namespace BooksLibrary.Infrastructure.EFCoreConfigurations
                 .WithOne(r => r.User)
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
-
-            builder.HasMany(u => u.Roles)
-                .WithMany(r => r.Users);
         }
     }
 }

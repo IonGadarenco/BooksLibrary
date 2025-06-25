@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BooksLibrary.Application.App.Auth.AuthResponse.DTOs;
 using BooksLibrary.Application.App.Authors.DTOs;
+using BooksLibrary.Application.App.Books.Commands;
 using BooksLibrary.Application.App.Books.DTOs;
 using BooksLibrary.Application.App.Categories.DOTs;
 using BooksLibrary.Application.App.Publishers.DTOs;
@@ -12,6 +13,7 @@ namespace BooksLibrary.Application.Mappings
     {
         public MappingProfile()
         {
+            CreateMap<UpdateBookCommandDto, UpdateBookCommand>().ReverseMap();
             CreateMap<Book, BookListDto>().ReverseMap();
             CreateMap<Book, UpdateBookCommandDto>().ReverseMap();
             CreateMap<Author, AuthorDto>().ReverseMap();

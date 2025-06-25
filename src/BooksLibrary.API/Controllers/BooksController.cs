@@ -19,11 +19,10 @@ namespace BooksLibrary.API.Controllers
         }
 
         [Authorize(Roles = "admin, user, vip")]
-        [HttpGet("paged")]
-        public async Task<IActionResult> GetAllBooksPaginated([FromQuery] PagedRequest pagedRequest) 
+        [HttpPost("paged")]
+        public async Task<ActionResult<PaginatedResult<BookListDto>>> GetAllBooksPaginated([FromBody] PagedRequest pagedRequest)
         {
-            var result = await _mediator.Send(new GetPagedBooksQuery { PagedRequest = pagedRequest});
-
+            var result = await _mediator.Send(new GetPagedBooksQuery { PagedRequest = pagedRequest });
             return Ok(result);
         }
 
@@ -62,6 +61,7 @@ namespace BooksLibrary.API.Controllers
                 PublisherId = updateBookCommandDto.PublisherId,
                 
             };
+
             var result = await _mediator.Send(updateBookCommand);
 
             return Ok(result);

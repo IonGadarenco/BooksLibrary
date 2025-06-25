@@ -43,7 +43,7 @@ namespace BooksLibrary.Application.App.Books.Commands
                 book.PublisherId = request.PublisherId;
 
                 var updatedBook = await _bookRepository.UpdateAsync(book);
-
+                await _bookRepository.SaveChangesAsync();
                 _logger.LogInformation("Book '{Title}' (ID: {Id}) was updated successfully.", book.Title, book.Id);
                 return _mapper.Map<UpdateBookCommandDto>(updatedBook);
             }

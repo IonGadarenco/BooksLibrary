@@ -29,6 +29,7 @@ namespace BooksLibrary.Application.App.Books.Commands
             }
 
             await _bookRepository.RemoveAsync(book);
+            await _bookRepository.SaveChangesAsync();
             _logger.LogInformation("Book with ID {Id} was deleted successfully", request.Id);
             return Unit.Value;
         }

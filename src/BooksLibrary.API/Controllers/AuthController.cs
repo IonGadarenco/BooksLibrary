@@ -26,7 +26,7 @@ namespace BooksLibrary.API.Controllers
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
                 Email = registerDto.Email,
-                RoleName = registerDto.RoleName
+                Role = registerDto.Role,
             };
             var result = await _mediator.Send(command);
             return Ok(result);

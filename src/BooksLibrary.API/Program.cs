@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using BooksLibrary.API.Extensions;
 using BooksLibrary.Infrastructure.Services;
 using BooksLibrary.Application.App.Auth.Abstractions;
+using BooksLibrary.API.Middlewares;
 
 namespace BooksLibrary.API
 {
@@ -57,6 +58,7 @@ namespace BooksLibrary.API
             }
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<DbTransactionMiddleware>();
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseAuthorization();

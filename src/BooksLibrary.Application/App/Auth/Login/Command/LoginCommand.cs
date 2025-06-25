@@ -37,7 +37,7 @@ namespace BooksLibrary.Application.App.Auth.Login.Command
         {
             var userQueryable = await _userRepo.GetAllAsync();
             var user = await userQueryable
-                .Include(u => u.Roles).FirstOrDefaultAsync(u => 
+                .FirstOrDefaultAsync(u => 
                 u.Email == request.Email && 
                 u.LastName == request.LastName, cancellationToken);
 
@@ -47,12 +47,12 @@ namespace BooksLibrary.Application.App.Auth.Login.Command
                 throw new UnauthorizedAccessException("Invalid credentials.");
             }
 
-            var roleName = user.Roles.FirstOrDefault()?.RoleName ?? "user";
+            var roleName = user.Role;
 
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, roleName),
+                new Claim(ClaimTypes.Role, roleName.ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
@@ -63,7 +63,7 @@ namespace BooksLibrary.Application.App.Auth.Login.Command
             {
                 Token = token,
                 Email = user.Email,
-                RoleName = roleName,
+                Role = roleName,
                 FirstName = user.FirstName,
                 LastName = user.LastName
             };

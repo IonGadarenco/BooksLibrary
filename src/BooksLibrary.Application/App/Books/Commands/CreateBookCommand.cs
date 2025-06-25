@@ -7,6 +7,7 @@ using BooksLibrary.Application.App.Publishers.DTOs;
 using BooksLibrary.Application.Commun.Abstractions;
 using BooksLibrary.Domain.Models;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BooksLibrary.Application.App.Books.Commands
@@ -115,6 +116,7 @@ namespace BooksLibrary.Application.App.Books.Commands
                     };
 
                     var createBook = await _bookRepository.AddAsync(book);
+                    await _bookRepository.SaveChangesAsync();
                     _logger.LogInformation("A new book '{Title}' was created successfully.", request.Title);
 
                     return _mapper.Map<BookDto>(createBook);
@@ -122,6 +124,7 @@ namespace BooksLibrary.Application.App.Books.Commands
 
                 existingBook.TotalCopies++;
                 await _bookRepository.UpdateAsync(existingBook);
+                await _bookRepository.SaveChangesAsync();
                 _logger.LogInformation("The book '{Title}' already exists. Incremented total copies.", request.Title);
 
                 return _mapper.Map<BookDto>(existingBook);

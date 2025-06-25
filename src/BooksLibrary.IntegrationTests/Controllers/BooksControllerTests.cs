@@ -143,8 +143,8 @@ namespace BooksLibrary.IntegrationTests.Controllers
             });
 
             Assert.NotNull(result);
-            Assert.Equal(5, result.Count());
-            Assert.Equal("Book 5", result[0].Title);
+            Assert.Equal(5, result.Items.Count());
+            Assert.Equal("Book 5", result.Items[0].Title);
         }
     }
 }

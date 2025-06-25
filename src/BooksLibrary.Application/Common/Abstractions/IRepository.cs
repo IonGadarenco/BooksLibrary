@@ -1,4 +1,5 @@
-﻿using BooksLibrary.Domain.Models;
+﻿using BooksLibrary.Application.Common.Models;
+using BooksLibrary.Domain.Models;
 
 namespace BooksLibrary.Application.Commun.Abstractions
 {
@@ -9,9 +10,9 @@ namespace BooksLibrary.Application.Commun.Abstractions
         Task<Book> GetByTitleAndIsbnAsync(string title, string isbn);
         Task<T> AddAsync(T item);
         Task RemoveAsync(T item);
-        Task<List<T>> GetAllAsyncPaged(int pageNumber, int pageSize);
         Task<IQueryable<T>> GetAllAsync();
         Task<T> UpdateAsync(T item);
         Task<bool> CheckIsbn(string isbn);
+        Task SaveChangesAsync();
     }
 }

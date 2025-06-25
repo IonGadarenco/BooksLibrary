@@ -10,11 +10,9 @@ namespace BooksLibrary.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            // Configurează EF Core
             services.AddDbContext<BooksLibraryDbContext>(options =>
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-            // Înregistrare repository generic
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             return services;
