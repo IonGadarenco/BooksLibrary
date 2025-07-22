@@ -20,7 +20,7 @@ namespace BooksLibrary.Infrastructure.EFCoreConfigurations
             builder.HasOne(r => r.Book)
                 .WithMany(b => b.Reviews)
                 .HasForeignKey(r => r.BookId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

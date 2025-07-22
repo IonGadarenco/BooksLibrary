@@ -7,7 +7,7 @@ namespace BooksLibrary.Application.App.Auth.AuthResponse.DTOs
     public class AuthResponseDto
     {
         public string Email { get; set; }
-        public Roles Role { get; set; }
+        public string Role { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
     }

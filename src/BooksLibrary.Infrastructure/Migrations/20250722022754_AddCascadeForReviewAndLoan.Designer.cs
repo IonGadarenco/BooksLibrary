@@ -4,6 +4,7 @@ using BooksLibrary.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BooksLibrary.Infrastructure.Migrations
 {
     [DbContext(typeof(BooksLibraryDbContext))]
-    partial class BooksLibraryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250722022754_AddCascadeForReviewAndLoan")]
+    partial class AddCascadeForReviewAndLoan
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

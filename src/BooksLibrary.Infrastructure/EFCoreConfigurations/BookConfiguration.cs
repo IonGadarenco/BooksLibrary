@@ -19,17 +19,22 @@ namespace BooksLibrary.Infrastructure.EFCoreConfigurations
             builder.HasMany(b => b.Reviews)
                 .WithOne(r => r.Book)
                 .HasForeignKey(r => r.BookId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(b => b.Publisher)
                 .WithMany(p => p.Books)
                 .HasForeignKey(b => b.PublisherId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasMany(b => b.Reservations)
+                .WithOne(r => r.Book)
+                .HasForeignKey(r => r.BookId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasMany(b => b.Loans)
                 .WithOne(l => l.Book)
                 .HasForeignKey(l => l.BookId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(b => b.Authors)
                 .WithMany(a => a.Books);

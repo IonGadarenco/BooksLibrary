@@ -85,11 +85,13 @@ namespace BooksLibrary.Application.App.Books.Queries
             return filterBy switch
             {
                 "Title" => b => b.Title.Contains(value),
+                "Description" => b => b.Description.Contains(value),
                 "ISBN" => b => b.ISBN.Contains(value),
                 "Authors" => b => b.Authors.Any(x => x.FullName.Contains(value)),
+                "Categories" => b => b.Categories.Any(x => x.FullName.Contains(value)),
+                "Publisher" => b => b.Publisher.FullName.Contains(value),
                 _ => b => false
             };
         }
-
     }
 }

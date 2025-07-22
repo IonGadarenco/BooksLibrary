@@ -12,6 +12,8 @@ using BooksLibrary.Application.App.Reservations.Command;
 using BooksLibrary.Application.App.Reviews.Command;
 using BooksLibrary.Application.App.Reviews.DTOs;
 using Microsoft.EntityFrameworkCore;
+using BooksLibrary.Application.App.Likes.DTOs;
+using BooksLibrary.Application.App.Likes.Queries;
 
 namespace BooksLibrary.API.Controllers
 {
@@ -29,7 +31,7 @@ namespace BooksLibrary.API.Controllers
             _azureBlobService = azureBlobService;
         }
 
-        [Authorize(Roles = "admin, user, vip")]
+        //[Authorize(Roles = "admin, user, vip")]
         [HttpPost("paged")]
         public async Task<ActionResult<PaginatedResult<BookListDto>>> GetAllBooksPaginated([FromBody] PagedRequest pagedRequest)
         {
@@ -37,7 +39,7 @@ namespace BooksLibrary.API.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "admin, user, vip")]
+        //[Authorize(Roles = "admin, user, vip")]
         [HttpGet("{bookId}")]
         public async Task<IActionResult> GetBookById( [FromRoute] int bookId)
         {
@@ -165,5 +167,15 @@ namespace BooksLibrary.API.Controllers
 
             return CreatedAtAction(nameof(GetBookById), new { bookId = bookId }, result);
         }
+
+        [Authorize]
+        [HttpGet("likes")]
+        public Task<List<LikedBookDto>> GetLikedBooks()
+        {
+            var result = _mediator.Send(new GetLikedBookQuery());
+
+            return result;
+        }
+ 
     }
 }
