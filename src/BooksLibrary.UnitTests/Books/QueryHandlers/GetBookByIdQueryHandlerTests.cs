@@ -26,7 +26,7 @@ public class GetBookByIdQueryHandlerTests
 
         var config = new MapperConfiguration(cfg =>
         {
-            cfg.AddProfile<MappingProfile>();
+            cfg.AddProfile<ApplicationMappingProfile>();
         });
 
         _mapper = config.CreateMapper();

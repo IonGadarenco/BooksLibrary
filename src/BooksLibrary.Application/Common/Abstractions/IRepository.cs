@@ -14,7 +14,7 @@ namespace BooksLibrary.Application.Commun.Abstractions
         Task RemoveAsync(T item);
         Task<IQueryable<T>> GetAllAsync();
         Task<T> UpdateAsync(T item);
-        Task<bool> CheckIsbn(string isbn);
+        Task<bool> DoesIsbnExist(string isbn);
         Task SaveChangesAsync();
     }
 }

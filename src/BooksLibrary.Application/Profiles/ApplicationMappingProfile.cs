@@ -9,9 +9,9 @@ using BooksLibrary.Domain.Models;
 
 namespace BooksLibrary.Application.Mappings
 {
-    public class MappingProfile : Profile
+    public class ApplicationMappingProfile : Profile
     {
-        public MappingProfile()
+        public ApplicationMappingProfile()
         {
             CreateMap<Review, ReviewDto>()
             .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => $"{src.User.FirstName} {src.User.LastName}"));

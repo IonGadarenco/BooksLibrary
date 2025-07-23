@@ -109,7 +109,7 @@ namespace BooksLibrary.Infrastructure.Repositories
             return item;
         }
 
-        public async Task<bool> CheckIsbn(string isbn)
+        public async Task<bool> DoesIsbnExist(string isbn)
         {
             var result = await _context.Set<Book>().FirstOrDefaultAsync(b => b.ISBN == isbn);
 

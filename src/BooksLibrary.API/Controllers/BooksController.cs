@@ -14,6 +14,7 @@ using BooksLibrary.Application.App.Reviews.DTOs;
 using Microsoft.EntityFrameworkCore;
 using BooksLibrary.Application.App.Likes.DTOs;
 using BooksLibrary.Application.App.Likes.Queries;
+using AutoMapper;
 
 namespace BooksLibrary.API.Controllers
 {
@@ -24,11 +25,17 @@ namespace BooksLibrary.API.Controllers
         private readonly IMediator _mediator;
         private readonly IAzureBlobService _azureBlobService;
         private readonly ILogger<BooksController> _logger;
-        public BooksController(IMediator mediator, ILogger<BooksController> logger, IAzureBlobService azureBlobService)
+        private readonly IMapper _mapper;
+        public BooksController(
+            IMediator mediator, 
+            ILogger<BooksController> logger,
+            IAzureBlobService azureBlobService,
+            IMapper mapper)
         {
             _mediator = mediator;
             _logger = logger;
             _azureBlobService = azureBlobService;
+            _mapper = mapper;
         }
 
         //[Authorize(Roles = "admin, user, vip")]
@@ -55,43 +62,11 @@ namespace BooksLibrary.API.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost]
-        public async Task<IActionResult> AddBook( [FromForm] BookApiRequestDto request)
+        public async Task<IActionResult> AddBook( [FromForm] BookApiRequestDto dto)
         {
-            string coverImageUrl = await _mediator.Send(new SaveToAzureCoverImageCommand { CoverImage = request.CoverImageFile});
-
-            var createBookCommand = new CreateBookCommand
-            {
-                Title = request.Title,
-                Description = request.Description,
-                ISBN = request.ISBN,
-                TotalCopies = request.TotalCopies,
-                Publisher = request.Publisher,
-                Authors = request.Authors,
-                Categories = request.Categories,
-                CoverImageUrl = coverImageUrl,
-            };
-
-            var result = await _mediator.Send(createBookCommand);
-
+            var cmd = _mapper.Map<CreateBookCommand>(dto);
+            var result = await _mediator.Send(cmd);
             return Ok(result);
-        }
-
-        [Authorize(Roles = "admin")]
-        [HttpPost("edit-cover-image")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> EditCoverImage([FromForm] EditCoverImageDto dto)
-        {
-            if(!string.IsNullOrWhiteSpace(dto.CoverImageUrlToDelete))
-            {
-                var (oldFile, oldContainer) = _azureBlobService.GetBlobInfoFromUrl(dto.CoverImageUrlToDelete);
-                if (oldFile != null && oldContainer != null)
-                    await _azureBlobService.DeleteBlobAsync(oldContainer, oldFile);
-            }
-            var newName = Guid.NewGuid() + Path.GetExtension(dto.CoverImageFile.FileName);
-            await using var stream = dto.CoverImageFile.OpenReadStream();
-            var uri = await _azureBlobService.UploadFileAsync(stream, newName, "bookscoverimg");
-
-            return Ok(uri.ToString());
         }
 
         [Authorize(Roles = "admin")]
@@ -99,20 +74,7 @@ namespace BooksLibrary.API.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> EditBook([FromForm] UpdateBookCommandDto dto)
         {
-            var cmd = new UpdateBookCommand
-            {
-                Id = dto.Id,
-                Title = dto.Title,
-                Description = dto.Description,
-                ISBN = dto.ISBN,
-                TotalCopies = dto.TotalCopies,
-                CoverImageUrl = dto.CoverImageUrl,
-                Publisher = dto.Publisher,
-                Authors = dto.Authors,
-                Categories = dto.Categories
-                
-            };
-
+            var cmd = _mapper.Map<UpdateBookCommand>(dto);
             await _mediator.Send(cmd);
             return NoContent();
         }

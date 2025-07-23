@@ -38,7 +38,7 @@ namespace BooksLibrary.Infrastructure
                 return new BlobServiceClient(blobUri, credential);
             });
 
-            services.AddSingleton<IAzureBlobService, AzureBlobService>();
+            services.AddScoped<IAzureBlobService, AzureBlobService>();
 
             return services;
         }

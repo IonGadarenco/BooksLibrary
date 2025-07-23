@@ -19,7 +19,7 @@ namespace BooksLibrary.IntegrationTests.Helpers
         public static IMapper CreateMappre()
         {
             var services = new ServiceCollection();
-            services.AddAutoMapper(typeof(MappingProfile));
+            services.AddAutoMapper(typeof(ApplicationMappingProfile));
             var serviceProvider = services.BuildServiceProvider();
             return serviceProvider.GetRequiredService<IMapper>();
         }
@@ -49,7 +49,7 @@ namespace BooksLibrary.IntegrationTests.Helpers
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             // AutoMapper
-            services.AddAutoMapper(typeof(MappingProfile));
+            services.AddAutoMapper(typeof(ApplicationMappingProfile));
 
             // MediatR (scanează toate handler-ele)
             services.AddMediatR(cfg =>
